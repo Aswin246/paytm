@@ -1,7 +1,7 @@
 const express = require("express");
 const zod = require("zod");
 const jwt = require("jsonwebtoken");
-const { User } = require("../db");
+const { User, Account } = require("../db");
 const JWT_SECRET = require("../config");
 const { authMiddleWare } = require("./middleware");
 const app = express();
@@ -56,6 +56,10 @@ router.post("/signup", async (req, res) => {
 
   const userId = user._id;
 
+  await Account.create({
+    userId,
+    balance: 1 + Math.random() * 10000,
+  });
   const token = jwt.sign(
     {
       userId,
@@ -100,7 +104,7 @@ router.post("/signin", async (req, res) => {
   });
 });
 
-router.put("/", async (req, res) => {
+router.put("/", authMiddleWare, async (req, res) => {
   const body = req.body;
   const { success } = updateSchema.safeParse(body);
 
@@ -111,9 +115,12 @@ router.put("/", async (req, res) => {
   }
 
   try {
-    const result = await User.updateOne({ _id: req.userId }, body);
-
-    console.log("Update Result:", result);
+    const result = await User.updateOne(
+      {
+        id: req.userId,
+      },
+      req.body
+    );
 
     if (result.nModified > 0) {
       res.json({
@@ -158,4 +165,5 @@ router.get("/bulk", async (req, res) => {
     })),
   });
 });
+
 module.exports = router;
