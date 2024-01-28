@@ -52,6 +52,7 @@ router.get("/transfer", async (req, res) => {
       $inc: {
         balance: amount,
       },
+    }
   );
 
   res.json({
