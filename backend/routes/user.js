@@ -28,6 +28,7 @@ const updateSchema = zod.object({
 
 router.post("/signup", async (req, res) => {
   const body = req.body;
+  console.log(req.body);
   const { success, error } = signUpSchema.safeParse(body);
 
   if (!success) {
