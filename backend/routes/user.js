@@ -28,7 +28,6 @@ const updateSchema = zod.object({
 
 router.post("/signup", async (req, res) => {
   const body = req.body;
-  console.log(req.body);
   const { success, error } = signUpSchema.safeParse(body);
 
   if (!success) {
@@ -167,4 +166,12 @@ router.get("/bulk", async (req, res) => {
   });
 });
 
+router.get("/name", authMiddleWare, async (req, res) => {
+  const id = req.userId;
+  console.log(id);
+  const user = await User.findById(id);
+  res.json({
+    firstName: user.firstName,
+  });
+});
 module.exports = router;
